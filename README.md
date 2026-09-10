@@ -18,7 +18,6 @@ This project follows an end-to-end machine learning workflow:
 6. Probability threshold tuning
 7. Final model evaluation
 8. Error analysis
-9. Model serialization for deployment
 
 The project uses several classification algorithms and evaluates them using multiple metrics rather than relying solely on accuracy.
 
@@ -321,7 +320,7 @@ The saved artifact contains:
 {
     'model': model,
     'threshold': 0.36,
-    'best_params': ...
+    'feature_names': ...
 }
 ```
 
