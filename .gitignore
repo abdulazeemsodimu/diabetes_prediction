@@ -12,3 +12,8 @@ ENV/
 *.html
 *.pdf
 .nbval/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class

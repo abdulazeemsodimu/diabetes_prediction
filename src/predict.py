@@ -2,31 +2,76 @@ import joblib
 from pathlib import Path
 import pandas as pd
 
-def prediction():
-    artifact_path = Path('models/best_model_and_threshold.joblib')
-    data_path = Path('data/diabetes.csv')
 
-    artifact = joblib.load(artifact_path)
+MODEL_PATH = (
+    Path(__file__).parent.parent
+    / "models"
+    / "best_model_and_threshold.joblib"
+)
 
-    model_pipeline = artifact['model']
-    threshold = artifact['threshold']
-    expected_features = artifact['feature_names']
+
+def load_model():
+    """
+    Load the trained model, threshold and expected feature names.
+    """
+
+    artifact = joblib.load(MODEL_PATH)
+
+    model_pipeline = artifact["model"]
+    threshold = artifact["threshold"]
+    expected_features = artifact["feature_names"]
+
+    return model_pipeline, threshold, expected_features
+
+
+def prediction(data):
+    """
+    Make a prediction for a single patient.
+    """
+
+    model_pipeline, threshold, expected_features = load_model()
+
+    new_data = pd.DataFrame(
+        [data],
+        columns=expected_features
+    )
+
+    probability = model_pipeline.predict_proba(
+        new_data
+    )[0, 1]
+
+    pred = int(probability >= threshold)
+
+    return probability, pred
+
+
+if __name__ == "__main__":
+
+    data_path = (
+        Path(__file__).parent.parent
+        / "data"
+        / "diabetes.csv"
+    )
 
     data = pd.read_csv(data_path)
 
-    if 'Outcome' in data.columns:
-        data = data.drop(columns='Outcome')
+    if "Outcome" in data.columns:
+        data = data.drop(columns="Outcome")
 
-    new_data = data[expected_features]
+    model_pipeline, threshold, expected_features = load_model()
 
-    y_pred_proba_positive = model_pipeline.predict_proba(new_data)[:,1]
+    probabilities = model_pipeline.predict_proba(
+        data[expected_features]
+    )[:, 1]
 
-    y_preds = (y_pred_proba_positive >= threshold).astype(int)
+    predictions = (
+        probabilities >= threshold
+    ).astype(int)
 
-    return y_pred_proba_positive, y_preds
+    results = pd.DataFrame({
+        "Predictions": predictions,
+        "Probabilities": probabilities
+    })
 
-if __name__ == '__main__':
-    probabilities, predictions = prediction()
+    print(results.head())
 
-    results = pd.DataFrame({'Predictions': [predictions], 'Probabilities': [probabilities]})
-    print(results)

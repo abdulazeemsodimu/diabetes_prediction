@@ -3,13 +3,13 @@ from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
 import pandas as pd
 from pathlib import Path
-from preprocessing import preproccessing
+from preprocessing import preprocessing
 import joblib
 
 
 def main():
     data_path = Path('data/diabetes.csv')
-    model_path = Path('models')
+    model_path = Path('models').mkdir(parents=True, exist_ok=True)
     artifact_path = model_path / 'best_model_and_threshold.joblib'
 
     data = pd.read_csv(data_path)
@@ -19,7 +19,7 @@ def main():
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, stratify=y, random_state=42)
 
-    preprocessor = preproccessing()
+    preprocessor = preprocessing()
     model_pipeline = Pipeline(steps=[
         ('preprocessor', preprocessor),
         ('model', LogisticRegression(C=0.1, class_weight='balanced', max_iter=200, l1_ratio=1, solver='liblinear'))

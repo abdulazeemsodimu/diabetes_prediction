@@ -3,7 +3,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import StandardScaler
 
-def preproccessing():
+def preprocessing():
 
     zero_categories = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI']
     others = ['Pregnancies', 'Age', 'DiabetesPedigreeFunction']
@@ -17,9 +17,9 @@ def preproccessing():
         ('scaler', StandardScaler())
     ])
 
-    preproccessor = ColumnTransformer(transformers=[
+    preprocessor = ColumnTransformer(transformers=[
         ('zeros', zeros_pipeline, zero_categories),
         ('others', others_pipeline, others)
     ])
 
-    return preproccessor
+    return preprocessor
